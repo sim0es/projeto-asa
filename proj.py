@@ -1,3 +1,5 @@
+import numpy as np
+
 def sol(matrix):
     sum = 0
     if matrix(0, 0):
@@ -8,7 +10,4 @@ def sol(matrix):
             sum += sol(matrix - i*i)
             i += 1
             return sum
-
-def 
-
 
