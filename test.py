@@ -34,7 +34,6 @@ def removes_from_top_left(vetor, n):
 def gera_filhos(vetor):
     global vetores_soluc
     global vetores_pend
-    vetores_pend = []
     vetores_temp = []
     n = 1
     while n <= min(linha_final, coluna_final):
@@ -43,28 +42,17 @@ def gera_filhos(vetor):
         n += 1
 
     for v in vetores_temp:
-        if v[-2] <= 1:
-            vetores_soluc.append(v)
+        if v[-2] == 1:
+            vetores_soluc += [v]
         else:
-            vetores_pend.append(v)
+            vetores_pend += [v]
 
-    experiment = []
+        """for p in vetores_temp:
+            gera_filhos(p)"""
 
-    for d in vetores_pend:
-        experiment += [d]
-    for p in experiment:
-        gera_filhos(p)
+    return vetores_soluc
 
-gera_filhos(vetor_pai)
+print(vetores_soluc)
+print(vetores_pend)
 
-vetores_soluc_final = []
-for l in vetores_soluc:
-    if l not in vetores_soluc_final:
-        vetores_soluc_final.append(l)
-
-if len(vetores_soluc_final) > 1:
-    resul = len(vetores_soluc_final) + 1
-else:
-    resul = len(vetores_soluc_final)
-
-print(resul)
+print(gera_filhos([0, 2, 3, 5]))
