@@ -1,51 +1,70 @@
-# def sol(matrix):
-#     sum = 0
-#     if matrix(0, 0):
-#         return 1
-#     else:
-#         sum = 0
-#         for i in range(1, "biggest square top left"):
-#             sum += sol(matrix - i*i)
-#             i += 1
-#             return sum
+vetores_soluc = []
+vetores_pend = []
 
-matrix = []
-i = 0
 linha_final = int(input('n linhas: '))
 coluna_final = int(input('n colunas: '))
 
-linha_atual = 0
-coluna_atual = 0
-
-while linha_atual < linha_final:
-    linha_campo = []
-    while coluna_atual < coluna_final:
-        linha_campo += [0]
-        coluna_atual += 1
-    matrix += [linha_campo]
-    coluna_atual = 0
-    linha_atual += 1
-
-print(matrix)
-
 counter = 0
+vetor_pai = []
 
 while counter < linha_final:
-    c = int(input('Valor de c: '))
-    if c != 0:    
-        matrix[counter][c - 1] = 1
-        d = c
-        while d > 0:
-            matrix[counter][d - 1] = 1
-            d -= 1
+    c = int(input('valor de c: '))
+    vetor_pai += [c]
     counter += 1
 
-print(matrix)
+def copia_vetor(vetor):
+    vetor_filho = []
+    for j in vetor:
+        vetor_filho += [j]
+    return vetor_filho
 
-def countSquares(self, A):
-        for i in range(1, len(A)):
-            for j in range(1, len(A[0])):
-                A[i][j] *= min(A[i - 1][j], A[i][j - 1], A[i - 1][j - 1]) + 1
-        return sum(map(sum, A))
+def removes_from_top_left(vetor, n):
+    k = 0
+    l = 0
+    while k < linha_final - 1 and l < n:
+        if vetor[k] > 0:
+            if vetor[k] - n >= 0 and n <= linha_final - k + 1:
+                vetor[k] -= n
+                l += 1
+            else:
+                return False
+        k += 1
+    return vetor
 
-print(countSquares(0, matrix))
+def gera_filhos(vetor):
+    global vetores_soluc
+    global vetores_pend
+    vetores_pend = []
+    vetores_temp = []
+    n = 1
+    while n <= min(linha_final, coluna_final):
+        if removes_from_top_left(copia_vetor(vetor), n):
+            vetores_temp += [removes_from_top_left(copia_vetor(vetor), n)]
+        n += 1
+
+    for v in vetores_temp:
+        if v[-2] <= 1:
+            vetores_soluc.append(v)
+        else:
+            vetores_pend.append(v)
+
+    experiment = []
+
+    for d in vetores_pend:
+        experiment += [d]
+    for p in experiment:
+        gera_filhos(p)
+
+gera_filhos(vetor_pai)
+
+vetores_soluc_final = []
+for l in vetores_soluc:
+    if l not in vetores_soluc_final:
+        vetores_soluc_final.append(l)
+
+if len(vetores_soluc_final) > 1:
+    resul = len(vetores_soluc_final) + 1
+else:
+    resul = len(vetores_soluc_final)
+
+print(resul)
