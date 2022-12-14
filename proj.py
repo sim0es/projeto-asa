@@ -1,70 +1,95 @@
 vetores_soluc = []
-vetores_pend = []
-
-linha_final = int(input('n linhas: '))
-coluna_final = int(input('n colunas: '))
-
-counter = 0
 vetor_pai = []
 
-while counter < linha_final:
-    c = int(input('valor de c: '))
-    vetor_pai += [c]
-    counter += 1
+linha_final = int(input('Nº linhas: '))
+coluna_final = int(input('Nº colunas: ')) 
+nzeros = 0
 
-def copia_vetor(vetor):
+# counter = 0
+
+# while counter < linha_final:
+#     c = int(input('Valor de c: '))
+#     vetor_pai += [c]
+#     counter += 1
+
+for i in range(linha_final):
+    c = int(input())
+    vetor_pai.append(c)
+    if (c == 0):
+        nzeros += 1
+
+def copia_vetor(vetor: list):
     vetor_filho = []
-    for j in vetor:
-        vetor_filho += [j]
+    for i in vetor:
+        vetor_filho += [i]
     return vetor_filho
 
-def removes_from_top_left(vetor, n):
-    k = 0
-    l = 0
-    while k < linha_final and l < n:
-        if vetor[k] > 0:
-            if vetor[k] - n >= 0 and n <= linha_final - k + 1:
-                vetor[k] -= n
-                l += 1
+def remove_quadrados(vetor: list, n: int):
+    vetor_n = copia_vetor(vetor)
+    linha = 0
+    removidos = 0
+    for j in range(len(vetor_n) - 1):
+        if vetor_n[j + 1] > vetor_n[j]:
+            linha = j + 1
+    while linha < linha_final and removidos < n:
+        if linha + n > linha_final:
+            return False
+        if vetor_n[linha] - n >= 0:
+            for l in range(linha, linha + n):
+                if vetor_n[l] != vetor_n[linha]:
+                    return False
+            if n == 1:
+                vetor_n[linha] -= n
+                removidos += 1
             else:
-                return False
-        k += 1
-    return vetor
+                for k in range(linha, linha + n):
+                    vetor_n[k] -= n
+                    removidos += 1
+        else:
+            return False
+        linha += 1
+    return vetor_n
 
-def gera_filhos(vetor):
+def possivel_soluc(vetor: list):
+    soluc = True
+    for q in range(len(vetor) - 1):
+        if vetor[q] > 1 and vetor[q + 1] > 1:
+            soluc = False
+            break
+    return soluc
+
+def gera_filhos(vetor: list):
     global vetores_soluc
-    global vetores_pend
+    vetores_filhos = []
     vetores_pend = []
-    vetores_temp = []
     n = 1
-    while n <= min(linha_final, coluna_final):
-        if removes_from_top_left(copia_vetor(vetor), n):
-            vetores_temp += [removes_from_top_left(copia_vetor(vetor), n)]
+    quadrado_limite = False
+    while n <= min(linha_final, coluna_final) and not quadrado_limite:
+        vetor_filho_t = remove_quadrados(vetor, n)
+        if vetor_filho_t:
+            for p in range(len(vetor_filho_t) - 2):                
+                if vetor_filho_t[p + 1] > vetor_filho_t[p] and vetor_filho_t[p + 1] > vetor_filho_t[p + 2]:                    
+                    vetor_filho_t[p + 1] -= 1
+            vetores_filhos += [vetor_filho_t]
+        else:
+            quadrado_limite = True
         n += 1
 
-    for v in vetores_temp:
-        if v[-2] <= 1:
-            vetores_soluc.append(v)
+    for vetor_filho_c in vetores_filhos:
+        if possivel_soluc(vetor_filho_c):
+            vetores_soluc += [vetor_filho_c]
         else:
-            vetores_pend.append(v)
+            vetores_pend += [vetor_filho_c]
 
-    experiment = []
-
-    for d in vetores_pend:
-        experiment += [d]
-    for p in experiment:
-        gera_filhos(p)
+    vetores_temp = copia_vetor(vetores_pend)
+    for r in vetores_temp:
+        gera_filhos(r)
 
 gera_filhos(vetor_pai)
 
-vetores_soluc_final = []
-for l in vetores_soluc:
-    if l not in vetores_soluc_final:
-        vetores_soluc_final.append(l)
+if (nzeros == linha_final):
+    print(0)
+    exit()
 
-if len(vetores_soluc_final) > 1:
-    resul = len(vetores_soluc_final) + 1
-else:
-    resul = len(vetores_soluc_final)
+print(len(vetores_soluc))
 
-print(resul)
